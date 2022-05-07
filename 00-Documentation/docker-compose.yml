@@ -1,0 +1,67 @@
+version: '3.3'
+services:
+  db:
+    container_name: volta-db
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'volta'
+      MYSQL_USER: 'volta'
+      MYSQL_PASSWORD: 'Smart2022'
+      MYSQL_ROOT_PASSWORD: 'Mends2022'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+    networks:
+      - volta      
+
+  api:
+    container_name: evoting-api
+    image: datarun/evoting-api:6
+    restart: always
+    environment:
+      SPRING_PROFILES_ACTIVE: 'prod'
+    ports:
+      - '8181:8181'
+    expose:
+      - '8181'
+    networks:
+      - volta  
+    depends_on:
+      - volta-db   
+  voting:
+    container_name: evoting-web
+    image: datarun/evoting-web:6
+    restart: always
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    networks:
+      - volta  
+    depends_on:
+      - volta-db    
+
+  strong-room:
+    container_name: evoting-strong-room
+    image: datarun/evoting-strong-room:6
+    restart: always
+    ports:
+      - '8282:8080'
+    expose:
+      - '8282'
+    networks:
+      - volta  
+    depends_on:
+      - volta-db               
+
+
+
+volumes:
+  my-db:
+
+networks:
+  volta:  
